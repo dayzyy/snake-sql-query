@@ -1,4 +1,12 @@
 services:
+  core:
+    build:
+      context: ./app
+    volumes:
+      - ./app:/usr/local/app
+    depends_on:
+      - db
+
   db:
     build:
       context: ./db
