@@ -1,4 +1,5 @@
-from abc import ABC
+from abc import ABC, abstractmethod
+from typing import Any
 
 class Field(ABC):
     def __init__(self, pk: bool = False, fk: bool = False, unique: bool = False, null: bool = True, default=None) -> None:
@@ -28,3 +29,28 @@ class Field(ABC):
         self.unique = False
         self.null = False
         self.default = None
+
+    @classmethod
+    @abstractmethod
+    def get_python_type(cls) -> Any:
+        raise NotImplementedError
+
+    @classmethod
+    @abstractmethod
+    def get_sql_type(cls) -> str:
+        raise NotImplementedError
+
+    def get_default_sql(self) -> str:
+        parts = []
+
+        if self.pk:
+            parts.append('PRIMARY KEY')
+        if self.unique:
+            parts.append('UNIQUE')
+        if not self.null:
+            parts.append('NOT NULL')
+        if self.default is not None:
+            parts.append(f'DEFAULT "{self.default}"')
+
+        sql = " ".join(parts)
+        return sql
