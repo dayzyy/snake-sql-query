@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.python-version
+venv/
+.env
+
+# Docker
+*.log
+docker-compose.override.yml
+*.pid
+
+# VSCode or IDE files (optional)
+.vscode/
+.idea/
+
+# Byte-compiled / cache / temp files
+*.swp
+*.swo
