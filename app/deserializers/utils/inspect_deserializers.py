@@ -1,5 +1,5 @@
 import deserializers
-from deserializers.base_deserializers import BaseDeserializer
+from deserializers.deserializers import BaseDeserializer
 import inspect
 from typing import List, Type
 

@@ -1,5 +1,5 @@
 from typing import Type
-from deserializers.base_deserializers import BaseDeserializer
+from deserializers.deserializers import BaseDeserializer
 from deserializers.utils.inspect_deserializers import get_deserializer_classes, extract_format_from_deserializer
 
 class DeserializerFactory:

@@ -1,5 +1,5 @@
 from typing import List
-from file_handlers.base_file_readers import TextFileReader 
+from file_handlers.file_handlers import TextFileReader 
 from deserializers.factory import DeserializerFactory
 
 def get_data():
