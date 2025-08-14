@@ -49,3 +49,12 @@ class IntField(Field):
     @classmethod
     def get_sql_type(cls) -> str:
         return "INTEGER"
+
+class CharField(Field):
+    @classmethod
+    def get_python_type(cls):
+        return str
+
+    @classmethod
+    def get_sql_type(cls) -> str:
+        return "VARCHAR"
