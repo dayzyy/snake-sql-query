@@ -10,18 +10,48 @@ class Column:
     field: fields.Field
 
 class ModelMeta:
-    def __init__(self, table_name: str, columns: list[Column]) -> None:
-        self.table_name = table_name
-        self.columns = columns
+    def __init__(self, model: type["Model"]) -> None:
+        self.model = model
+        self.table_name = self._get_table_name()
+        self.columns = self._get_table_columns()
+        self.pk_column = self._get_table_pk_column()
+
+    def _get_table_name(self):
+        return self.model.__name__.lower() + 's'
+
+    def _get_table_columns(self):
+        return [
+            Column(name, field) for name, field in self.model.__dict__.items()
+            if isinstance(field, fields.Field)
+        ]
+
+    def _get_table_pk_column(self):
+        pk_columns = [column for column in self.columns if column.field.pk]
+        self._validate_columns_pk(pk_columns)
+
+        return pk_columns[0]
+
+    def _validate_columns_pk(self, columns: list[Column]):
+        error = None
+        if len(columns) < 1:
+            error = (
+                "Every model must have one primary key!\n"
+                f"No primary key found in model {self.model.__name__!r}"
+            )
+        elif len(columns) > 1:
+            error = (
+                "Each model must have only one primary key!\n"
+                f"Multiple primary keys found in model {self.model.__name__!r}:\n"
+                f"{[column.name for column in columns]!r}"
+            )
+        if error:
+            raise ValueError(error)
 
 class Model:
     def __init_subclass__(cls) -> None:
         super().__init_subclass__()
 
-        table_name = cls.__name__.lower() + 's'
-        columns = [Column(name, value) for name, value in cls.__dict__.items()]
-
-        cls._meta = ModelMeta(table_name, columns)
+        cls._meta = ModelMeta(cls)
         cls.get_models = staticmethod(partial(get_classes, Model, sys.modules[cls.__module__]))
 
     def __init__(self, **kwargs) -> None:
