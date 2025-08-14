@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Any, Optional
+import datetime
 
 class Field(ABC):
     def __init__(self, pk: bool = False, unique: bool = False, null: bool = True, default=None) -> None:
@@ -99,3 +100,10 @@ class ForeignKey(Field):
         fk_sql = f"REFERENCES {self.model._meta.table_name}({self.column_name})"
 
         return default + ' ' + fk_sql
+
+class DateTimeField(Field):
+    def get_python_type(self):
+        return datetime.datetime
+
+    def get_sql_type(self) -> str:
+        return "DATETIME(6)"
