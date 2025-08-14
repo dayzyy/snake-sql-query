@@ -1,4 +1,7 @@
 from fields import fields
+from common.get_classes import get_classes
+from functools import partial
+import sys
 
 class ModelMeta:
     def __init__(self, table_name: str, columns: dict[str, fields.Field]) -> None:
@@ -17,6 +20,7 @@ class Model:
         }
 
         cls._meta = ModelMeta(table_name, columns)
+        cls.get_models = staticmethod(partial(get_classes, Model, sys.modules[cls.__module__]))
 
     def __init__(self, **kwargs) -> None:
         cls = self.__class__
