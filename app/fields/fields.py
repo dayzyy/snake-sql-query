@@ -37,3 +37,6 @@ class Field(ABC):
 
         sql = " ".join(parts)
         return sql
+
+    def get_sql(self) -> str:
+        return self.get_sql_type() + ' ' + self.get_default_sql()
