@@ -40,3 +40,12 @@ class Field(ABC):
 
     def get_sql(self) -> str:
         return self.get_sql_type() + ' ' + self.get_default_sql()
+
+class IntField(Field):
+    @classmethod
+    def get_python_type(cls):
+        return int
+
+    @classmethod
+    def get_sql_type(cls) -> str:
+        return "INTEGER"
