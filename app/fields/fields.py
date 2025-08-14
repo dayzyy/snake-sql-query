@@ -65,31 +65,26 @@ class CharField(Field):
 class ForeignKey(Field):
     from models.models import Model
 
-    def __init__(
-            self, model: Model, column_name: Optional[str] = None,
-            pk: bool = False, unique: bool = False, null: bool = True, default=None
-    ) -> None:
-
+    def __init__(self, model: type[Model], column_name: Optional[str] = None) -> None:
         super().__init__(pk=False, unique=False, null=False, default=None)
 
         self.model = model
         self.column_name = column_name
         self.referenced_field = self._get_referenced_field()
 
-
     def _get_referenced_field(self) -> Field:
-        # Default the referenced column to the primary key column of the table
+        # Default to model's primary key
         ref_field = None
         if self.column_name is None:
-            for name, field in self.model._meta.columns.items():
-                if field.pk:
-                    self.column_name = name
-                    ref_field = field
+            ref_field = self.model._meta.pk_column.field
         else:
             ref_field = getattr(self.model, self.column_name)
 
-        if not ref_field:
-            raise ValueError(f"Invalid reference: table {self.model._meta.table_name} with column {self.column_name!r} does not exist!")
+        if not isinstance(ref_field, Field):
+            raise ValueError(
+                f"Invalid reference: model {self.model.__name__} "
+                f"with column {self.column_name!r} does not exist or is not a Field!"
+            )
 
         return ref_field
 
