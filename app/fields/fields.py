@@ -39,6 +39,15 @@ class Field(ABC):
     def get_sql(self) -> str:
         return self.get_sql_type() + ' ' + self.get_default_sql()
 
+    def validate(self, value) -> None:
+        excepted_type = self.get_python_type()
+        if not isinstance(value, excepted_type):
+            raise ValueError(
+                f"Invalid value type for {self.__class__.__name__!r} instance\n"
+                f"Expected type: {excepted_type}\n"
+                f"Provided type: {type(value)}"
+            )
+
 class IntField(Field):
     def get_python_type(self) -> type[int]:
         return int
