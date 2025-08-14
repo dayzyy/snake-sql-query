@@ -1,15 +1,16 @@
-from typing import Type
+import deserializers
 from deserializers.deserializers import BaseDeserializer
-from deserializers.utils.inspect_deserializers import get_deserializer_classes, extract_format_from_deserializer
+from deserializers.utils.inspect_deserializers import extract_format_from_deserializer
+from common.get_classes import get_classes
 
 class DeserializerFactory:
-    DESERIALIZERS: dict[str, Type[BaseDeserializer]] = {
+    DESERIALIZERS: dict[str, type[BaseDeserializer]] = {
         extract_format_from_deserializer(cls): cls
-        for cls in get_deserializer_classes()
+        for cls in get_classes(BaseDeserializer, deserializers)
     }
 
     @classmethod
-    def get_deserializer(cls, format: str) -> Type[BaseDeserializer]:
+    def get_deserializer(cls, format: str) -> type[BaseDeserializer]:
         try:
             return cls.DESERIALIZERS[format.lower()]
         except KeyError:
