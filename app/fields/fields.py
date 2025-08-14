@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, Optional
 
 class Field(ABC):
     def __init__(self, pk: bool = False, unique: bool = False, null: bool = True, default=None) -> None:
@@ -63,31 +63,35 @@ class CharField(Field):
         return "VARCHAR"
 
 class ForeignKey(Field):
+    from models.models import Model
+
     def __init__(
-            self, table_name: str, column_name: str,
+            self, model: Model, column_name: Optional[str] = None,
             pk: bool = False, unique: bool = False, null: bool = True, default=None
     ) -> None:
 
         super().__init__(pk=False, unique=False, null=False, default=None)
-        self.table_name = table_name
+
+        self.model = model
         self.column_name = column_name
         self.referenced_field = self._get_referenced_field()
 
+
     def _get_referenced_field(self) -> Field:
-        from models.models import Model
-        all_models = Model.get_models()
+        # Default the referenced column to the primary key column of the table
+        ref_field = None
+        if self.column_name is None:
+            for name, field in self.model._meta.columns.items():
+                if field.pk:
+                    self.column_name = name
+                    ref_field = field
+        else:
+            ref_field = getattr(self.model, self.column_name)
 
-        field = None
-        for model in all_models:
-            if model._meta.table_name == self.table_name:
-                for name, value in model._meta.columns.items():
-                    if name == self.column_name:
-                        field = value
+        if not ref_field:
+            raise ValueError(f"Invalid reference: table {self.model._meta.table_name} with column {self.column_name!r} does not exist!")
 
-        if not field:
-            raise ValueError(f"Invalid reference: table {self.table_name!r} with column {self.column_name!r} does not exist!")
-
-        return field
+        return ref_field
 
     def get_python_type(self) -> Any:
         return self.referenced_field.get_python_type()
@@ -97,6 +101,6 @@ class ForeignKey(Field):
 
     def get_sql(self) -> str:
         default = self.get_default_sql()
-        fk_sql = f"REFERENCES {self.table_name}({self.column_name})"
+        fk_sql = f"REFERENCES {self.model._meta.table_name}({self.column_name})"
 
         return default + ' ' + fk_sql
