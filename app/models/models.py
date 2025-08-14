@@ -1,9 +1,9 @@
-from fields.fields import Field
+from fields import fields
 
 class ModelMeta:
-    def __init__(self, table_name: str, fields: dict[str, Field]) -> None:
+    def __init__(self, table_name: str, columns: dict[str, fields.Field]) -> None:
         self.table_name = table_name
-        self.fields = fields
+        self.columns = columns
 
 class Model:
     def __init_subclass__(cls) -> None:
@@ -11,16 +11,16 @@ class Model:
 
         table_name = cls.__name__.lower() + 's'
 
-        fields = {
+        columns = {
             name: value for name, value in cls.__dict__.items()
-            if isinstance(value, Field)
+            if isinstance(value, fields.Field)
         }
 
-        cls._meta = ModelMeta(table_name, fields)
+        cls._meta = ModelMeta(table_name, columns)
 
     def __init__(self, **kwargs) -> None:
         cls = self.__class__
-        for name, field in cls._meta.fields.items():
+        for name, field in cls._meta.columns.items():
             if name in kwargs:
                 value = kwargs[name]
                 field.validate(value)
