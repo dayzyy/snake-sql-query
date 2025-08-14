@@ -13,14 +13,12 @@ class Field(ABC):
         self.null = null
         self.default = default
 
-    @classmethod
     @abstractmethod
-    def get_python_type(cls) -> Any:
+    def get_python_type(self) -> Any:
         raise NotImplementedError
 
-    @classmethod
     @abstractmethod
-    def get_sql_type(cls) -> str:
+    def get_sql_type(self) -> str:
         raise NotImplementedError
 
     def get_default_sql(self) -> str:
@@ -42,19 +40,15 @@ class Field(ABC):
         return self.get_sql_type() + ' ' + self.get_default_sql()
 
 class IntField(Field):
-    @classmethod
-    def get_python_type(cls):
+    def get_python_type(self) -> type[int]:
         return int
 
-    @classmethod
-    def get_sql_type(cls) -> str:
+    def get_sql_type(self) -> str:
         return "INTEGER"
 
 class CharField(Field):
-    @classmethod
-    def get_python_type(cls):
+    def get_python_type(self) -> type[str]:
         return str
 
-    @classmethod
-    def get_sql_type(cls) -> str:
+    def get_sql_type(self) -> str:
         return "VARCHAR"
