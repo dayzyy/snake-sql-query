@@ -64,12 +64,12 @@ class CharField(Field):
         return "VARCHAR"
 
 class ForeignKey(Field):
-    from models.models import Model
+    def __init__(self, model: type["Model"], column_name: Optional[str] = None) -> None:
+        from models.models import Model
 
-    def __init__(self, model: type[Model], column_name: Optional[str] = None) -> None:
         super().__init__(pk=False, unique=False, null=False, default=None)
 
-        self.model = model
+        self.model: type[Model] = model
         self.column_name = column_name
         self.referenced_field = self._get_referenced_field()
 
