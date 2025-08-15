@@ -40,7 +40,7 @@ class Field(ABC):
     def get_sql(self) -> str:
         return self.get_sql_type() + ' ' + self.get_default_sql()
 
-    def validate(self, value) -> None:
+    def _validate(self, value) -> None:
         excepted_type = self.get_python_type()
         if not isinstance(value, excepted_type):
             raise ValueError(
@@ -48,6 +48,10 @@ class Field(ABC):
                 f"Expected type: {excepted_type}\n"
                 f"Provided type: {type(value)}"
             )
+
+    def _from_table_value(self, value):
+        self._validate(value)
+        return value
 
 class IntField(Field):
     def get_python_type(self) -> type[int]:
@@ -107,3 +111,12 @@ class DateTimeField(Field):
 
     def get_sql_type(self) -> str:
         return "DATETIME(6)"
+
+    def _validate(self, value) -> None:
+        if isinstance(value, str):
+            return
+        super()._validate(value)
+
+    def _from_table_value(self, value):
+        validated_value = super()._from_table_value(value)
+        return datetime.datetime.strptime(value, '%d-%m-%Y %H:%M:%S.%f')

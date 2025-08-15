@@ -58,8 +58,7 @@ class Model:
         cls = self.__class__
         for column in cls._meta.columns:
             if column.name in kwargs:
-                value = kwargs[column.name]
-                column.field.validate(value)
+                value = column.field._from_table_value(kwargs[column.name])
                 setattr(self, column.name, value)
             elif column.field.default is not None:
                 setattr(self, column.name, column.field.default)
