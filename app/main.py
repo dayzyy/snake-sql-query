@@ -13,7 +13,7 @@ def process_data(students_file: str, rooms_file: str, format: str):
 
 def main():
     args = parse_arguments()
-    process_data(args.student_file, args.rooms_file, args.format)
+    process_data(args.students_file, args.rooms_file, args.format)
 
 if __name__ == "__main__":
     main()
