@@ -80,14 +80,14 @@ class ForeignKey(Field):
     def _get_referenced_field(self) -> Field:
         # Default to model's primary key
         ref_field = None
-        if self.column_name is None:
+        if not self.column_name:
             ref_field = self.model._meta.pk_column.field
         else:
-            ref_field = getattr(self.model, self.column_name)
+            ref_field = getattr(self.model, self.column_name, None)
 
         if not isinstance(ref_field, Field):
             raise ValueError(
-                f"Invalid reference: model {self.model.__name__} "
+                f"Invalid reference: model {self.model.__name__!r} "
                 f"with column {self.column_name!r} does not exist or is not a Field!"
             )
 
