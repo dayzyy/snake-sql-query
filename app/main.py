@@ -1,7 +1,7 @@
 from file_handlers.file_handlers import TextFileReader 
 from deserializers.factory import DeserializerFactory
-from cli.parse_arguments import parse_arguments
 from db.db import Database
+from db.custom_queries import run_queries, create_indexes
 from models.custom_models import Student, Room
 import os
 
@@ -39,6 +39,9 @@ def main():
     for model, data in zip(models, (students, rooms)):
         for row in data:
             model.manager.add(model(**row))
+
+    create_indexes()
+    run_queries()
 
 if __name__ == "__main__":
     main()
