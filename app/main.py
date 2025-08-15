@@ -29,18 +29,23 @@ def main():
 
     setup_db()
 
+    Student.manager.drop()
+    Room.manager.drop()
+
     models = (Room, Student)
 
-    # Create tables
     for model in models:
         model.manager.create()
 
-    # Insert rows
-    for model, data in zip(models, (students, rooms)):
-        for row in data:
-            model.manager.add(model(**row))
+    print("INSERTING ROWS")
+    for model, data in zip(models, (rooms, students)):
+        rows = (model(**row) for row in data)
+        model.manager.add_bulk(rows)
 
+    print("CREATING INDEXES")
     create_indexes()
+
+    print("EXECUTING QUERIES")
     run_queries()
 
 if __name__ == "__main__":

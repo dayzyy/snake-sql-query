@@ -1,3 +1,4 @@
+from typing import Iterable
 from fields import fields
 from common.get_classes import get_classes
 from functools import partial
@@ -88,6 +89,10 @@ class ModelManager:
 
         Database.execute(query, commit=True)
 
+    def drop(self):
+        query = f"DROP TABLE IF EXISTS {self.model._meta.table_name}"
+        Database.execute(query, commit=True)
+
     def add(self, row: Model):
         columns = [col.name for col in self.model._meta.columns]
         values = [getattr(row, col) for col in columns]
@@ -98,3 +103,14 @@ class ModelManager:
         query = f"INSERT INTO {self.model._meta.table_name} ({columns_sql}) VALUES ({placeholders})"
 
         Database.execute(query, params=values, commit=True)
+
+    def add_bulk(self, rows: Iterable[Model], batch_size=None):
+        columns = [col.name for col in self.model._meta.columns]
+        values = [tuple(getattr(row, col) for col in columns) for row in rows]
+
+        placeholders = ', '.join(['%s'] * len(columns))
+        columns_sql = ', '.join(columns)
+
+        query = f"INSERT INTO {self.model._meta.table_name} ({columns_sql}) VALUES ({placeholders})"
+
+        Database.execute_many(query, params=values, commit=True)
