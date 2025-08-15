@@ -53,6 +53,7 @@ class Model:
         super().__init_subclass__()
 
         cls._meta = ModelMeta(cls)
+        cls.manager = ModelManager(cls)
         cls.get_models = staticmethod(partial(get_classes, Model, sys.modules[cls.__module__]))
 
     def __init__(self, **kwargs) -> None:
