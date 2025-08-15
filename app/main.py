@@ -5,11 +5,11 @@ from db.db import Database
 from models.custom_models import Student, Room
 import os
 
-def process_data(students_file: str, rooms_file: str, format: str):
-    students_data = TextFileReader.read(students_file)
-    rooms_data = TextFileReader.read(rooms_file)
+def process_data():
+    students_data = TextFileReader.read('./data/students.json')
+    rooms_data = TextFileReader.read('./data/rooms.json')
 
-    deserializer = DeserializerFactory.get_deserializer(format)
+    deserializer = DeserializerFactory.get_deserializer('json')
 
     students = deserializer.deserialize(students_data)
     rooms = deserializer.deserialize(rooms_data)
@@ -25,13 +25,20 @@ def setup_db():
     )
 
 def main():
-    # args = parse_arguments()
-    # students, rooms = process_data(args.students_file, args.rooms_file, args.format)
+    students, rooms = process_data()
 
     setup_db()
 
-    Student.manager.create()
-    Room.manager.create()
+    models = (Room, Student)
+
+    # Create tables
+    for model in models:
+        model.manager.create()
+
+    # Insert rows
+    for model, data in zip(models, (students, rooms)):
+        for row in data:
+            model.manager.add(model(**row))
 
 if __name__ == "__main__":
     main()

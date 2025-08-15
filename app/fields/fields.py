@@ -65,7 +65,7 @@ class CharField(Field):
         return str
 
     def get_sql_type(self) -> str:
-        return "VARCHAR"
+        return "VARCHAR(255)"
 
 class ForeignKey(Field):
     def __init__(self, model: type["Model"], column_name: Optional[str] = None) -> None:
@@ -99,11 +99,11 @@ class ForeignKey(Field):
     def get_sql_type(self) -> str:
         return self.referenced_field.get_sql_type()
 
-    def get_sql(self) -> str:
-        default = self.get_default_sql()
-        fk_sql = f"REFERENCES {self.model._meta.table_name}({self.column_name})"
-
-        return default + ' ' + fk_sql
+    def get_fk_constraint(self, column_name: str) -> str:
+        return (
+            f"FOREIGN KEY ({column_name}) "
+            f"REFERENCES {self.model._meta.table_name}({self.column_name})"
+        )
 
 class DateTimeField(Field):
     def get_python_type(self):

@@ -72,10 +72,19 @@ class Model:
 class ModelManager:
     def __init__(self, model: type[Model]) -> None:
         self.model = model
-        
+
     def create(self):
-        columns_sql = ', '.join(f"{col.name} {col.field.get_sql()}" for col in self.model._meta.columns)
-        query = f"CREATE TABLE IF NOT EXISTS {self.model._meta.table_name} ({columns_sql})"
+        columns_sql = []
+        fk_constraints = []
+
+        for col in self.model._meta.columns:
+            columns_sql.append(f"{col.name} {col.field.get_sql()}")
+
+            if isinstance(col.field, fields.ForeignKey):
+                fk_constraints.append(col.field.get_fk_constraint(col.name))
+
+        query_parts = columns_sql + fk_constraints
+        query = f"CREATE TABLE IF NOT EXISTS {self.model._meta.table_name} ({', '.join(query_parts)})"
 
         Database.execute(query, commit=True)
 

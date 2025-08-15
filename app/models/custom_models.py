@@ -10,4 +10,4 @@ class Student(Model):
     name = fields.CharField()
     sex = fields.CharField()
     birthday = fields.DateTimeField()
-    room = fields.ForeignKey(Room)
+    room = fields.ForeignKey(Room, 'id')
