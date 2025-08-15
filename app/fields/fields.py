@@ -119,4 +119,5 @@ class DateTimeField(Field):
 
     def _from_table_value(self, value):
         validated_value = super()._from_table_value(value)
-        return datetime.datetime.strptime(value, '%d-%m-%Y %H:%M:%S.%f')
+        value = validated_value.replace("T", " ")
+        return datetime.datetime.strptime(value, '%Y-%m-%d %H:%M:%S.%f')
