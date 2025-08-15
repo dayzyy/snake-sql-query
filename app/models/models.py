@@ -3,6 +3,7 @@ from common.get_classes import get_classes
 from functools import partial
 from dataclasses import dataclass
 import sys
+from db.db import Database
 
 @dataclass
 class Column:
@@ -66,3 +67,13 @@ class Model:
                 setattr(self, column.name, None)
             else:
                 raise ValueError(f"Missing kwarg for {column.name!r} attribute in {cls.__name__}.__init__")
+
+class ModelManager:
+    def __init__(self, model: type[Model]) -> None:
+        self.model = model
+        
+    def create(self):
+        columns_sql = ', '.join(f"{col.name} {col.field.get_sql()}" for col in self.model._meta.columns)
+        query = f"CREATE TABLE IF NOT EXISTS {self.model._meta.table_name} ({columns_sql})"
+
+        Database.execute(query, commit=True)
