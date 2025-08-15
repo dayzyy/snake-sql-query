@@ -1,12 +1,8 @@
-from typing import List
 from file_handlers.file_handlers import TextFileReader 
 from deserializers.factory import DeserializerFactory
+from cli.parse_arguments import parse_arguments
 
-def get_data():
-    students_file = '~/path/to/students.json'
-    rooms_file = '~/path/to/rooms.json'
-    format = students_file.split('.')[-1]
-
+def process_data(students_file: str, rooms_file: str, format: str):
     students_data = TextFileReader.read(students_file)
     rooms_data = TextFileReader.read(rooms_file)
 
@@ -15,14 +11,9 @@ def get_data():
     students = deserializer.deserialize(students_data)
     rooms = deserializer.deserialize(rooms_data)
 
-    other_logic(students, rooms)
-
-def other_logic(students: List, rooms: List):
-    pass
-
 def main():
-    print("Hello from app!")
-
+    args = parse_arguments()
+    process_data(args.student_file, args.rooms_file, args.format)
 
 if __name__ == "__main__":
     main()
