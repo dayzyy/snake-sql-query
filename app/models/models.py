@@ -78,3 +78,14 @@ class ModelManager:
         query = f"CREATE TABLE IF NOT EXISTS {self.model._meta.table_name} ({columns_sql})"
 
         Database.execute(query, commit=True)
+
+    def add(self, row: Model):
+        columns = [col.name for col in self.model._meta.columns]
+        values = [getattr(row, col) for col in columns]
+
+        placeholders = ', '.join(['%s'] * len(columns))
+        columns_sql = ', '.join(columns)
+
+        query = f"INSERT INTO {self.model._meta.table_name} ({columns_sql}) VALUES ({placeholders})"
+
+        Database.execute(query, params=values, commit=True)

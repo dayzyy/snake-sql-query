@@ -25,8 +25,8 @@ def setup_db():
     )
 
 def main():
-    args = parse_arguments()
-    students, rooms = process_data(args.students_file, args.rooms_file, args.format)
+    # args = parse_arguments()
+    # students, rooms = process_data(args.students_file, args.rooms_file, args.format)
 
     setup_db()
 
