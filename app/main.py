@@ -11,9 +11,11 @@ def process_data(students_file: str, rooms_file: str, format: str):
     students = deserializer.deserialize(students_data)
     rooms = deserializer.deserialize(rooms_data)
 
+    return students, rooms
+
 def main():
     args = parse_arguments()
-    process_data(args.students_file, args.rooms_file, args.format)
+    students, rooms = process_data(args.students_file, args.rooms_file, args.format)
 
 if __name__ == "__main__":
     main()
