@@ -1,11 +1,7 @@
 Run the mysql server and the python script
 
 ```bash
-docker compose up -d
+docker compose up
 ```
 
-See logs produced by the core service (the python script that runs queries)
-
-```bash
-docker compose logs core
-```
+Core service will log the requested queries
